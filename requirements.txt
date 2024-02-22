@@ -1,0 +1,5 @@
+requests
+aiogram
+python-dotenv
+aiohttp
+aiodns
