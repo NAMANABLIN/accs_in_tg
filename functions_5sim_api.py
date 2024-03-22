@@ -2,7 +2,7 @@ import requests
 from time import sleep
 from pprint import pprint
 import json
-from config import SIM_TOKEN, OLD_SIM_TOKEN
+from config import SIM_TOKEN, OLD_SIM_TOKEN, data
 
 DOMAIN = '5sim.biz'
 
@@ -35,19 +35,18 @@ def get_number(country1: str, operator1: str, product1: str):
 
 
 def old_get_number():
-    country = 15
-    service = 'bz'
-    operator = 'virtual32'
-
     params = (
         ('api_key', OLD_SIM_TOKEN),
-        ('country', country),
+        ('country', data['country']),
         ('action', 'getNumber'),
-        ('service', service),
-        ('operator', operator)
+        ('service', data['service']),
+        ('operator', data['operator'])
     )
 
     response = requests.get(f'http://api1.{DOMAIN}/stubs/handler_api.php', params=params)
+
+    if response.status_code != 200:
+        return None
     return response.content.decode('utf-8')
 
 

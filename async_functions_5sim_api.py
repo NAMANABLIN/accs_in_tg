@@ -1,8 +1,5 @@
-import requests
-from time import sleep
-from pprint import pprint
 import json
-from config import SIM_TOKEN, OLD_SIM_TOKEN
+from config import SIM_TOKEN, OLD_SIM_TOKEN, data
 import aiohttp
 
 DOMAIN = '5sim.biz'
@@ -43,10 +40,10 @@ async def old_get_number():
 
     params = (
         ('api_key', OLD_SIM_TOKEN),
-        ('country', country),
+        ('country', data['country']),
         ('action', 'getNumber'),
-        ('service', service),
-        ('operator', operator)
+        ('service', data['service']),
+        ('operator', data['operator'])
     )
 
     async with aiohttp.ClientSession() as session:
@@ -62,8 +59,28 @@ async def get_sms(id: str):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://{DOMAIN}/v1/user/check/' + id, headers=headers) as response:
-            return str(await response.text())
+            return reformat(str(await response.text()))
 
+
+async def finish_num(id: str):
+    headers = {
+        'Authorization': 'Bearer ' + SIM_TOKEN,
+        'Accept': 'application/json',
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://{DOMAIN}/v1/user/finish/' + id, headers=headers) as response:
+            return response.status
+
+async def cancel_num(id: str):
+    headers = {
+        'Authorization': 'Bearer ' + SIM_TOKEN,
+        'Accept': 'application/json',
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://{DOMAIN}/v1/user/cancel/' + id, headers=headers) as response:
+            return response.status
 
 async def get_cost(country1: str, product1: str):
     headers = {
